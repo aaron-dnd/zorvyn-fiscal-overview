@@ -1,29 +1,34 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import type { PieProps } from 'recharts';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, Sector } from 'recharts';
 import { useStore } from '../../store/useStore';
 import { Card } from '../../components/ui/Card';
 import { formatCurrency } from '../../utils/formatters';
 
-// Professional, slightly desaturated palette for better Dark Mode compatibility
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
-// This function renders the "Active Shape" when you hover over a slice
+interface ExpenseItem {
+  name: string;
+  value: number;
+}
+
+// Fixed ActiveShapeProps to match exactly what Recharts provides internally
 const renderActiveShape = (props: any) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent } = props;
 
   return (
     <g>
-      <text x={cx} y={cy - 5} dy={8} textAnchor="middle" fill="var(--text-main)" className="text-lg font-bold">
+      <text x={cx} y={cy - 5} dy={8} textAnchor="middle" fill="var(--text-main, #1e293b)" className="text-lg font-bold">
         {payload.name}
       </text>
-      <text x={cx} y={cy + 20} dy={8} textAnchor="middle" fill="var(--text-muted)" className="text-xs font-medium uppercase tracking-tighter">
+      <text x={cx} y={cy + 20} dy={8} textAnchor="middle" fill="var(--text-muted, #64748b)" className="text-xs font-medium uppercase tracking-tighter">
         {(percent * 100).toFixed(1)}% of total
       </text>
       <Sector
         cx={cx}
         cy={cy}
         innerRadius={innerRadius}
-        outerRadius={outerRadius + 8} // "Expands" the slice
+        outerRadius={outerRadius + 8}
         startAngle={startAngle}
         endAngle={endAngle}
         fill={fill}
@@ -46,47 +51,60 @@ const CategoryChart = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const currentRate = rates[currency] || 1;
 
-  const onPieEnter = (_: any, index: number) => {
+  const onPieEnter = useCallback((_: any, index: number) => {
     setActiveIndex(index);
-  };
+  }, []);
 
-  const expenseData = transactions
-    .filter(t => t.type === 'expense')
-    .reduce((acc: any[], curr) => {
-      const existing = acc.find(item => item.name === curr.category);
-      const convertedValue = curr.amount * currentRate;
+  // useMemo prevents recalculating data on every hover/render
+  const expenseData = useMemo(() => {
+    return transactions
+      .filter(t => t.type === 'expense')
+      .reduce((acc: ExpenseItem[], curr) => {
+        const existing = acc.find(item => item.name === curr.category);
+        const convertedValue = curr.amount * currentRate;
 
-      if (existing) {
-        existing.value += convertedValue;
-      } else {
-        acc.push({ name: curr.category, value: convertedValue });
-      }
-      return acc;
-    }, []);
+        if (existing) {
+          existing.value += convertedValue;
+        } else {
+          acc.push({ name: curr.category, value: convertedValue });
+        }
+        return acc;
+      }, []);
+  }, [transactions, currentRate]);
+
+  if (expenseData.length === 0) {
+    return (
+      <Card title="Spending Allocation" className="h-[400px] flex items-center justify-center">
+        <p className="text-slate-400 font-medium">No data available</p>
+      </Card>
+    );
+  }
 
   return (
     <Card title="Spending Allocation" className="h-[400px]">
       <ResponsiveContainer width="100%" height="90%">
         <PieChart>
           <Pie
-            activeIndex={activeIndex}
-            activeShape={renderActiveShape}
-            data={expenseData}
-            cx="50%"
-            cy="50%"
-            innerRadius={70} // Thinner ring for a more modern look
-            outerRadius={90}
-            paddingAngle={4}
-            dataKey="value"
-            onMouseEnter={onPieEnter}
-            animationBegin={0}
-            animationDuration={1200}
+            {...({
+              activeIndex,
+              activeShape: renderActiveShape,
+              data: expenseData,
+              cx: "50%",
+              cy: "50%",
+              innerRadius: 70,
+              outerRadius: 90,
+              paddingAngle: 4,
+              dataKey: "value",
+              onMouseEnter: onPieEnter,
+              animationBegin: 0,
+              animationDuration: 1200
+            } as PieProps)} // Spread + Casting removes the Pie underline
           >
             {expenseData.map((_, index) => (
               <Cell 
                 key={`cell-${index}`} 
                 fill={COLORS[index % COLORS.length]} 
-                stroke="var(--bg-card)" // Creates "cutouts" between slices
+                stroke="var(--bg-card)"
                 strokeWidth={2}
               />
             ))}
@@ -98,21 +116,23 @@ const CategoryChart = () => {
               borderRadius: '12px', 
               border: '1px solid var(--border-card)', 
               boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-              color: 'var(--text-main)'
             }}
-            itemStyle={{ color: 'var(--text-main)' }}
-            formatter={(value: any) => [
-              formatCurrency(Number(value) / currentRate, currency, rates), 
+            // Explicit typing for formatter value fixes the formatter underline
+            formatter={(value) => [
+              formatCurrency(value as number || 0, currency, rates), 
               'Spent'
             ]}
           />
           
           <Legend 
             iconType="circle" 
-            layout="horizontal" 
             align="center" 
             verticalAlign="bottom"
-            formatter={(value) => <span className="text-[var(--text-muted)] text-xs font-bold uppercase">{value}</span>}
+            formatter={(value) => (
+              <span className="text-[var(--text-muted)] text-[10px] font-bold uppercase ml-1">
+                {value}
+              </span>
+            )}
           />
         </PieChart>
       </ResponsiveContainer>
