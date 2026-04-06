@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #f8fafc;     /* slate-50 */
+    --bg-card: #ffffff;     /* white */
+    --border-card: #e2e8f0;  /* slate-200 */
+    --text-main: #0f172a;    /* slate-900 */
+    --text-muted: #64748b;   /* slate-500 */
+  }
+
+  .dark {
+    --bg-main: #020617;     /* slate-950 */
+    --bg-card: #0f172a;     /* slate-900 */
+    --border-card: #1e293b;  /* slate-800 */
+    --text-main: #f8fafc;    /* slate-50 */
+    --text-muted: #94a3b8;   /* slate-400 */
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+}
