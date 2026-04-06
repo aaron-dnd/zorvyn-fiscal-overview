@@ -7,7 +7,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = ({ label, error, className = '', ...props }: InputProps) => {
   return (
-    <div className="w-full space-y-1.5">
+    <div className="w-full space-y-1.5 text-left">
       {label && (
         <label className="text-sm font-semibold text-slate-700 ml-1">
           {label}
@@ -16,6 +16,7 @@ export const Input = ({ label, error, className = '', ...props }: InputProps) =>
       <input
         className={`
           w-full px-4 py-2.5 bg-slate-50 border rounded-xl outline-none transition-all
+          text-slate-900 placeholder:text-slate-400 
           focus:ring-2 focus:ring-blue-100 focus:bg-white
           ${error ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-blue-500'}
           ${className}
