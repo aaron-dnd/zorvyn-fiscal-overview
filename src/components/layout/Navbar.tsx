@@ -1,7 +1,6 @@
 import { useStore } from '../../store/useStore';
 import { 
   Search, 
-  Bell, 
   User, 
   Menu, 
   Globe, 

@@ -65,7 +65,7 @@ const BalanceChart = () => {
             }}
             itemStyle={{ color: 'var(--text-main)' }}
             labelStyle={{ color: 'var(--text-muted)', fontWeight: 'bold' }}
-            formatter={(value: number) => [`${currency} ${value}`, 'Amount']}
+            formatter={(value: any) => [`${currency} ${value}`, ""]}
           />
           
           <Area 
