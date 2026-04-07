@@ -30,14 +30,14 @@ The project follows a modular, scalable architecture to ensure clean separation 
 zorvyn-fiscal-overview/
 ├── public/                 # Static assets
 ├── src/
-│   ├── assets/             # Global styles and media
-│   ├── components/         # UI Components
-│   │   └── layout/         # Navbar, Sidebar, WelcomeHeader
-│   ├── features/           # Domain logic (Dashboard, Ledger)
-│   ├── store/              # Zustand state (useStore.ts)
-│   ├── types/              # TypeScript interfaces
-│   ├── utils/              # Helper functions (Formatters)
-│   ├── App.tsx             # Main App Logic
-│   └── main.tsx            # Entry point
-├── package.json            # Dependencies
-└── README.md               # Documentation
+│   ├── assets/             # Global styles, images, fonts
+│   ├── components/         # Reusable UI components
+│   │   └── layout/         # Layout components (Navbar, Sidebar, Header)
+│   ├── features/           # Feature-based modules (Dashboard, Ledger, etc.)
+│   ├── store/              # Global state management (Zustand)
+│   ├── types/              # TypeScript interfaces & types
+│   ├── utils/              # Utility/helper functions (formatters, helpers)
+│   ├── App.tsx             # Root component
+│   └── main.tsx            # Application entry point
+├── package.json            # Project dependencies & scripts
+└── README.md               # Project documentation
