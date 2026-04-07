@@ -27,6 +27,9 @@ Utilities: UUID (for unique record identification)
 📂 Project Structure
 The project follows a modular, scalable architecture to ensure clean separation of concerns:
 
+## 📁 Project Structure
+
+```bash
 zorvyn-fiscal-overview/
 ├── public/                 # Static assets
 ├── src/
@@ -41,3 +44,4 @@ zorvyn-fiscal-overview/
 │   └── main.tsx            # Application entry point
 ├── package.json            # Project dependencies & scripts
 └── README.md               # Project documentation
+```
